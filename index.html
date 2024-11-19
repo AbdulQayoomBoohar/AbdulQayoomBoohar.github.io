@@ -3,37 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scripts List</title>
+    <title>Scripts List in Grid</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
         h1 {
+            text-align: center;
             color: #333;
         }
-        .script-card {
+        /* Style the grid container */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        /* Style the individual boxes */
+        .box {
             border: 1px solid #ddd;
             border-radius: 5px;
-            margin: 10px 0;
-            padding: 10px;
+            padding: 20px;
             background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        .script-card h2 {
+        .box h2 {
             margin: 0;
         }
-        .script-card p {
+        .box p {
             margin: 5px 0;
         }
-        .script-card a {
+        .box a {
             color: #007BFF;
             text-decoration: none;
+        }
+        /* Empty box styling */
+        .empty-box {
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
         }
     </style>
 </head>
 <body>
     <h1>Python Scripts</h1>
-    <div id="scripts-list">
+
+    <!-- 3x3 Grid Container -->
+    <div class="grid-container" id="scripts-list">
         <!-- Scripts will be populated here -->
     </div>
 
@@ -41,33 +63,44 @@
         // Function to load and display scripts from JSON
         async function loadScripts() {
             try {
-                const response = await fetch('scripts.json');
+                const response = await fetch('scripts.json'); // Adjust path to your JSON file
                 const scripts = await response.json();
 
                 const scriptsListContainer = document.getElementById('scripts-list');
-                scriptsListContainer.innerHTML = '';
+                scriptsListContainer.innerHTML = ''; // Clear any existing content
 
-                scripts.forEach(script => {
-                    // Create a new script card
+                // Loop through the scripts and create boxes
+                let scriptIndex = 0;
+                for (let i = 0; i < 9; i++) {
+                    const script = scripts[scriptIndex]; // Get script data for the box
+
+                    // Create a new script card or empty box
                     const scriptCard = document.createElement('div');
-                    scriptCard.classList.add('script-card');
+                    scriptCard.classList.add('box');
 
-                    // Add script name, description, and link
-                    scriptCard.innerHTML = `
-                        <h2>${script.name}</h2>
-                        <p><strong>Description:</strong> ${script.description}</p>
-                        <p><strong>Script Link:</strong> <a href="${script.link}" target="_blank">${script.link}</a></p>
-                    `;
+                    if (script) {
+                        // If there's script data, display it in the box
+                        scriptCard.innerHTML = `
+                            <h2>${script.name}</h2>
+                            <p><strong>Description:</strong> ${script.description}</p>
+                            <p><strong>Script Link:</strong> <a href="${script.link}" target="_blank">Script Link</a></p>
+                        `;
+                        scriptIndex++; // Move to the next script
+                    } else {
+                        // If there's no script data, show an empty box
+                        scriptCard.classList.add('empty-box');
+                        scriptCard.innerHTML = `<p>No script available</p>`;
+                    }
 
-                    // Append the script card to the list
+                    // Append the box to the grid
                     scriptsListContainer.appendChild(scriptCard);
-                });
+                }
             } catch (error) {
                 console.error('Error loading the JSON file:', error);
                 document.getElementById('scripts-list').innerHTML = 'Error loading the scripts.';
             }
         }
-   
+
         // Load scripts when the page loads
         window.onload = loadScripts;
     </script>
