@@ -1,0 +1,12 @@
+[
+    {
+        "name": "Python Script 1",
+        "description": "This is a Python script that does XYZ.",
+        "link": "https://example.com/script1.py"
+    },
+    {
+        "name": "Python Script 2",
+        "description": "This script performs ABC operations.",
+        "link": "https://example.com/script2.py"
+    }
+]
