@@ -1,17 +1,32 @@
 [
     {
         "name": "Python Script 1",
-        "description": "This script automates data cleaning.",
+        "description": "This script automates data cleaning by removing duplicates and missing values.",
         "link": "https://example.com/script1.py"
     },
     {
         "name": "Python Script 2",
-        "description": "This script generates data visualizations.",
+        "description": "This script performs data visualization, generating graphs for analysis.",
         "link": "https://example.com/script2.py"
     },
     {
         "name": "Python Script 3",
-        "description": "Script for web scraping.",
+        "description": "A web scraping script to extract data from websites and store it in CSV format.",
         "link": "https://example.com/script3.py"
+    },
+    {
+        "name": "Python Script 4",
+        "description": "This script automates sending emails with attachments to multiple recipients.",
+        "link": "https://example.com/script4.py"
+    },
+    {
+        "name": "Python Script 5",
+        "description": "A script for automating the backup of files from one directory to another.",
+        "link": "https://example.com/script5.py"
+    },
+    {
+        "name": "Python Script 6",
+        "description": "This script analyzes CSV data and generates a summary report.",
+        "link": "https://example.com/script6.py"
     }
 ]
