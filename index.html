@@ -69,7 +69,6 @@
                 const scriptsListContainer = document.getElementById('scripts-list');
                 scriptsListContainer.innerHTML = ''; // Clear any existing content
 
-                // Loop through the scripts and create boxes
                 let scriptIndex = 0;
                 for (let i = 0; i < 9; i++) {
                     const script = scripts[scriptIndex]; // Get script data for the box
@@ -78,7 +77,7 @@
                     const scriptCard = document.createElement('div');
                     scriptCard.classList.add('box');
 
-                    if (script) {
+                    if (script && scriptIndex < scripts.length) {
                         // If there's script data, display it in the box
                         scriptCard.innerHTML = `
                             <h2>${script.name}</h2>
