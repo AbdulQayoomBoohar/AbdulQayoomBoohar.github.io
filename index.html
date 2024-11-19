@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scripts List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .script-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .script-card h2 {
+            margin: 0;
+        }
+        .script-card p {
+            margin: 5px 0;
+        }
+        .script-card a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Python Scripts</h1>
+    <div id="scripts-list">
+        <!-- Scripts will be populated here -->
+    </div>
+
+    <script>
+        // Function to load and display scripts from JSON
+        async function loadScripts() {
+            try {
+                const response = await fetch('scripts.json');
+                const scripts = await response.json();
+
+                const scriptsListContainer = document.getElementById('scripts-list');
+                scriptsListContainer.innerHTML = '';
+
+                scripts.forEach(script => {
+                    // Create a new script card
+                    const scriptCard = document.createElement('div');
+                    scriptCard.classList.add('script-card');
+
+                    // Add script name, description, and link
+                    scriptCard.innerHTML = `
+                        <h2>${script.name}</h2>
+                        <p><strong>Description:</strong> ${script.description}</p>
+                        <p><strong>Script Link:</strong> <a href="${script.link}" target="_blank">${script.link}</a></p>
+                    `;
+
+                    // Append the script card to the list
+                    scriptsListContainer.appendChild(scriptCard);
+                });
+            } catch (error) {
+                console.error('Error loading the JSON file:', error);
+                document.getElementById('scripts-list').innerHTML = 'Error loading the scripts.';
+            }
+        }
+
+        // Load scripts when the page loads
+        window.onload = loadScripts;
+    </script>
+</body>
+</html>
