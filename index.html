@@ -3,116 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scripts List in Grid</title>
+    <title>Button Links</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        /* Style the grid container */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            max-width: 800px;
-            margin: 20px auto 0;
-        }
-        /* Style the individual boxes */
-        .box {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 20px;
-            background-color: #f9f9f9;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-        }
-        .box h2 {
-            margin: 0;
-        }
-        .box p {
-            margin: 5px 0;
-        }
-        .box a {
-            color: #007BFF;
-            text-decoration: none;
-        }
-        /* Empty box styling */
-        .empty-box {
-            background-color: #e0e0e0;
-            display: flex;
             align-items: center;
             justify-content: center;
-            color: #666;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
         }
-        /* Ad container styling */
-        .ad-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
+        .button-primary {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            color: #fff;
+            background-color: #007BFF;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+        .button-primary:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <h1>Python Scripts</h1>
-
-    <!-- Ad Container -->
-    <div class="ad-container">
-        <iframe data-aa="2369600" src="//ad.a-ads.com/2369600?size=728x90" style="width:728px; height:90px; border:0px; padding:0; overflow:hidden; background-color: transparent;"></iframe>
-    </div>
-
-    <!-- 3x3 Grid Container -->
-    <div class="grid-container" id="scripts-list">
-        <!-- Scripts will be populated here -->
-    </div>
-
-    <script>
-        // Function to load and display scripts from JSON
-        async function loadScripts() {
-            try {
-                const response = await fetch('scripts.json'); // Adjust path to your JSON file
-                const scripts = await response.json();
-
-                const scriptsListContainer = document.getElementById('scripts-list');
-                scriptsListContainer.innerHTML = ''; // Clear any existing content
-
-                let scriptIndex = 0;
-                for (let i = 0; i < 9; i++) {
-                    const script = scripts[scriptIndex]; // Get script data for the box
-
-                    // Create a new script card or empty box
-                    const scriptCard = document.createElement('div');
-                    scriptCard.classList.add('box');
-
-                    if (script && scriptIndex < scripts.length) {
-                        // If there's script data, display it in the box
-                        scriptCard.innerHTML = `
-                            <h2>${script.name}</h2>
-                            <p><strong>Description:</strong> ${script.description}</p>
-                            <p><strong>Script Link:</strong> <a href="${script.link}" target="_blank">Script Link</a></p>
-                        `;
-                        scriptIndex++; // Move to the next script
-                    } else {
-                        // If there's no script data, show an empty box
-                        scriptCard.classList.add('empty-box');
-                        scriptCard.innerHTML = `<p>No script available</p>`;
-                    }
-
-                    // Append the box to the grid
-                    scriptsListContainer.appendChild(scriptCard);
-                }
-            } catch (error) {
-                console.error('Error loading the JSON file:', error);
-                document.getElementById('scripts-list').innerHTML = 'Error loading the scripts.';
-            }
-        }
-
-        // Load scripts when the page loads
-        window.onload = loadScripts;
-    </script>
+    <h1>Choose an Option</h1>
+    <a href="https://example.com" class="button-primary" data-ga-label="get-started-1">Get Started 1</a>
+    <a href="https://example.com" class="button-primary" data-ga-label="get-started-2">Get Started 2</a>
+    <a href="https://example.com" class="button-primary" data-ga-label="get-started-3">Get Started 3</a>
+    <a href="https://example.com" class="button-primary" data-ga-label="get-started-4">Get Started 4</a>
+    <a href="https://example.com" class="button-primary" data-ga-label="get-started-5">Get Started 5</a>
+    <a href="https://example.com" class="button-primary" data-ga-label="get-started-6">Get Started 6</a>
 </body>
 </html>
