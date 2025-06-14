@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Button Links</title>
+    <title>Button Links with Ads</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -30,15 +30,39 @@
         .button-primary:hover {
             background-color: #0056b3;
         }
+        .ad-box {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin: 20px 0;
+            background-color: #fff;
+            text-align: center;
+            width: 750px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            border-radius: 8px;
+        }
+        .ad-caption {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #333;
+        }
     </style>
 </head>
 <body>
     <h1>Choose an Option</h1>
+
     <a href="https://example.com" class="button-primary" data-ga-label="get-started-1">Get Started 1</a>
     <a href="https://example.com" class="button-primary" data-ga-label="get-started-2">Get Started 2</a>
     <a href="https://example.com" class="button-primary" data-ga-label="get-started-3">Get Started 3</a>
     <a href="https://example.com" class="button-primary" data-ga-label="get-started-4">Get Started 4</a>
     <a href="https://example.com" class="button-primary" data-ga-label="get-started-5">Get Started 5</a>
     <a href="https://example.com" class="button-primary" data-ga-label="get-started-6">Get Started 6</a>
+
+    <div class="ad-box">
+        <div class="ad-caption">Ads Here</div>
+        <iframe data-aa='2398525' src='//ad.a-ads.com/2398525?size=728x90' 
+            style='width:728px; height:90px; border:0; padding:0; overflow:hidden; background-color: transparent;'>
+        </iframe>
+    </div>
 </body>
 </html>
