@@ -1,68 +1,119 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Button Links with Ads</title>
+    <title>Khanpur Mahar Weather</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-        }
-        .button-primary {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 10px;
-            color: #fff;
-            background-color: #007BFF;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
-            text-align: center;
-            transition: background-color 0.3s ease;
-        }
-        .button-primary:hover {
-            background-color: #0056b3;
-        }
-        .ad-box {
-            border: 1px solid #ccc;
-            padding: 15px;
-            margin: 20px 0;
+        body { font-family: 'Courier New', monospace; background-color: #f8f9fa; color: #222; padding: 20px; }
+        .box {
+            border: 2px solid #444;
+            padding: 10px;
+            margin: 10px auto;
+            width: 90%;
             background-color: #fff;
-            text-align: center;
-            width: 750px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.05);
             border-radius: 8px;
         }
-        .ad-caption {
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 18px;
-            color: #333;
-        }
+        .heading { font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 10px; }
+        .item { margin: 5px 0; }
     </style>
 </head>
 <body>
-    <h1>Choose an Option</h1>
+    <div class="heading">📍 Khanpur Mahar ka aglay 48 ghanton ka mosam</div>
+    <div id="forecast">Loading...</div>
 
-    <a href="https://example.com" class="button-primary" data-ga-label="get-started-1">Get Started 1</a>
-    <a href="https://example.com" class="button-primary" data-ga-label="get-started-2">Get Started 2</a>
-    <a href="https://example.com" class="button-primary" data-ga-label="get-started-3">Get Started 3</a>
-    <a href="https://example.com" class="button-primary" data-ga-label="get-started-4">Get Started 4</a>
-    <a href="https://example.com" class="button-primary" data-ga-label="get-started-5">Get Started 5</a>
-    <a href="https://example.com" class="button-primary" data-ga-label="get-started-6">Get Started 6</a>
+    <script>
+        async function fetchWeather() {
+            const forecastEl = document.getElementById("forecast");
 
-    <div class="ad-box">
-        <div class="ad-caption">Ads Here</div>
-        <iframe data-aa='2398525' src='//ad.a-ads.com/2398525?size=728x90' 
-            style='width:728px; height:90px; border:0; padding:0; overflow:hidden; background-color: transparent;'>
-        </iframe>
-    </div>
+            const openMeteoURL = "https://api.open-meteo.com/v1/forecast?latitude=27.84088&longitude=69.41302&hourly=temperature_2m,precipitation_probability,wind_speed_10m,weathercode&timezone=Asia%2FKarachi";
+            const metNoURL = "https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=27.84088&lon=69.41302";
+
+            const [omRes, metRes] = await Promise.all([
+                fetch(openMeteoURL),
+                fetch(metNoURL, { headers: { "User-Agent": "WeatherCompare/1.0 contact@example.com" } })
+            ]);
+
+            const om = await omRes.json();
+            const met = await metRes.json();
+
+            const omTime = om.hourly.time;
+            const omTemp = om.hourly.temperature_2m;
+            const omRain = om.hourly.precipitation_probability;
+            const omWind = om.hourly.wind_speed_10m;
+            const omCode = om.hourly.weathercode;
+
+            const metSeries = met.properties.timeseries;
+
+            const codeMap = {
+                0: "Bilkul saaf", 1: "Thora badal", 2: "Halka badal", 3: "Buhat badal",
+                45: "Dhond", 48: "Thandi dhond", 51: "Boonda", 61: "Halki barish",
+                63: "Tez barish", 80: "Halki barish", 81: "Tez barish", 82: "Bari tez barish",
+                95: "Bijli/toofan"
+            };
+
+            function weatherMet(desc) {
+                const d = desc.toLowerCase();
+                if (d.includes("clear")) return "Bilkul saaf";
+                if (d.includes("partly") || d.includes("scattered")) return "Halka badal";
+                if (d.includes("cloud")) return "Buhat badal";
+                if (d.includes("fog")) return "Dhond";
+                if (d.includes("rain") && d.includes("heavy")) return "Tez barish";
+                if (d.includes("rain")) return "Halki barish";
+                if (d.includes("thunder")) return "Bijli/toofan";
+                return "Pata nahi";
+            }
+
+            function windFeel(speed) {
+                if (speed >= 10) return "Tez hawa";
+                if (speed >= 5) return "Darmiyani hawa";
+                return "Halki hawa";
+            }
+
+            let content = "";
+            const now = new Date();
+
+            for (let i = 0; i < Math.min(48, omTime.length); i++) {
+                const t = new Date(omTime[i]);
+                if (t < now) continue;
+
+                const dateStr = t.toLocaleDateString("ur-PK", { day: "2-digit", month: "long", year: "numeric" });
+                const timeStr = t.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+
+                const descOM = codeMap[omCode[i]] || "Pata nahi";
+                const feelOM = windFeel(omWind[i]);
+                const temp = omTemp[i];
+                const rain = omRain[i];
+                const wind = omWind[i];
+
+                const metEntry = metSeries.find(e => new Date(e.time).getHours() === t.getHours());
+                let descMet = "N/A", feelMet = "N/A";
+                if (metEntry) {
+                    const windMet = metEntry.data.instant.details.wind_speed;
+                    const summary = (metEntry.data.next_1_hours?.summary?.symbol_code) || "";
+                    descMet = weatherMet(summary);
+                    feelMet = windFeel(windMet);
+                }
+
+                content += `
+                <div class="box">
+                    <div class="item"><b>📅 Tareekh:</b> ${dateStr}</div>
+                    <div class="item"><b>🕒 Waqt:</b> ${timeStr}</div>
+                    <div class="item"><b>🌤️ Mosam (Open-Meteo):</b> ${descOM}</div>
+                    <div class="item"><b>🌡️ Hararat:</b> ${temp}°C</div>
+                    <div class="item"><b>🌧️ Barish ka imkaan:</b> ${rain}%</div>
+                    <div class="item"><b>🌬️ Hawa ki raftaar:</b> ${wind} m/s</div>
+                    <div class="item"><b>🌀 Hawa ka ehsaas:</b> ${feelOM}</div>
+                    <div class="item"><b>🌤️ Mosam (Met.no):</b> ${descMet}</div>
+                    <div class="item"><b>🌀 Hawa (Met.no):</b> ${feelMet}</div>
+                </div>
+                `;
+            }
+
+            forecastEl.innerHTML = content;
+        }
+
+        fetchWeather();
+    </script>
 </body>
 </html>
