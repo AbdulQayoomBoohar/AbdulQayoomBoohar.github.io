@@ -1,168 +1,191 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
   <meta charset="UTF-8" />
-  <title>Weather Forecast</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mosam - Khanpur Mahar</title>
   <style>
-    body { margin:0; padding:1em; font-family:Arial,sans-serif; background:#f3f4f6; color:#111 }
-    h1 { text-align:center; margin-bottom:1em; }
-    #search-box { display:flex; justify-content:center; gap:.5em; margin-bottom:1.5em; }
-    #location-input { flex:1; padding:.5em; font-size:1em; }
-    #forecast { display:grid; gap:1em; max-width:1600px; margin:auto;
-      grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    body {
+      margin: 0;
+      padding: 1em;
+      font-family: sans-serif;
+      background: #f3f4f6;
+      color: #111;
     }
-    @media (max-width:480px)  { #forecast { grid-template-columns:repeat(2,1fr) } }
-    @media (min-width:481px) and (max-width:768px) { #forecast { grid-template-columns:repeat(4,1fr) } }
-    @media (min-width:769px) { #forecast { grid-template-columns:repeat(8,1fr) } }
-    .card { background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.1);
-      padding:1em; transition:transform .2s; }
-    .card:hover { transform:scale(1.05) }
-    .card h3 { margin:0 0 .5em; font-size:1em; color:#333 }
-    .item { margin:4px 0 }
-    .footer { text-align:center; font-size:.9em; color:#666; margin-top:2em }
-    button { padding:.5em 1em; font-size:1em; }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1em;
+    }
+
+    #location-select {
+      display: block;
+      margin: 0 auto 1.5em auto;
+      padding: 0.5em;
+      font-size: 1em;
+    }
+
+    #forecast {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1em;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 1em;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card h3 {
+      margin-top: 0;
+      font-size: 1em;
+      color: #333;
+    }
+
+    .item {
+      margin: 4px 0;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 2em;
+    }
   </style>
 </head>
 <body>
-  <h1 id="title">📍 Weather Forecast</h1>
+  <h1>📍 Mosam ka Haal</h1>
+  <select id="location-select">
+    <option value="27.84088,69.41302">Khanpur Mahar</option>
+    <option value="28.00604,69.31608">Ghotki</option>
+    <option value="24.8607,67.0011">Karachi</option>
+    <option value="31.5497,74.3436">Lahore</option>
+    <option value="33.6844,73.0479">Islamabad</option>
+  </select>
 
-  <div id="search-box">
-    <input type="text" id="location-input" placeholder="Type city name…">
-    <button id="search-btn">🔍 Search</button>
-  </div>
+  <div id="forecast">Loading...</div>
 
-  <div id="forecast">Loading…</div>
-  <div class="footer" id="footer">Weather from Open-Meteo & Met.no</div>
+  <div class="footer">Weather from Open-Meteo & Met.no | Developed with ❤️</div>
 
   <script>
-  let lang = 'en';
-  let labels = {};
+    async function fetchWeather(lat, lon) {
+      const forecastEl = document.getElementById("forecast");
+      forecastEl.innerHTML = "Loading...";
 
-  // 1) Detect IP & region → set lang
-  fetch('https://ipapi.co/json/')
-    .then(r=>r.json())
-    .then(info=>{
-      if(info.country_code!=='PK') lang='en';
-      else if(info.region==='Sindh') lang='sd';   // Sindhi
-      else lang='ur';                             // Urdu
-      loadLabels();
-    })
-    .catch(_=>{ lang='en'; loadLabels() });
+      const openMeteoURL = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,precipitation_probability,wind_speed_10m,weathercode&timezone=Asia%2FKarachi`;
+      const metNoURL = `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}`;
 
-  function loadLabels(){
-    const all = {
-      en:{
-        title: '📍 Weather Forecast',
-        placeholder: 'Type city name…',
-        btn: '🔍 Search',
-        footer: 'Weather from Open-Meteo & Met.no',
-        mapsErr: 'Location not found.',
-        code: {0:"Clear",1:"Few clouds",2:"Partly cloudy",3:"Overcast",
-               45:"Fog",48:"Freezing fog",51:"Light drizzle",
-               61:"Light rain",63:"Moderate rain",80:"Light showers",
-               81:"Moderate showers",82:"Heavy showers",95:"Thunderstorm"},
-        weatherMet(d){ d=d.toLowerCase(); if(d.includes("clear"))return"Clear";
-          if(d.includes("partly")||d.includes("scattered"))return"Partly cloudy";
-          if(d.includes("cloud"))return"Overcast"; if(d.includes("fog"))return"Fog";
-          if(d.includes("rain")&&d.includes("heavy"))return"Heavy rain";
-          if(d.includes("rain"))return"Light rain"; if(d.includes("thunder"))return"Thunderstorm";
-          return"Unknown"; },
-        windFeel(s){ if(s>=10)return"Strong wind"; if(s>=5)return"Moderate wind"; return"Light wind"; }
-      },
-      ur:{
-        title: '📍 Mosam Ka Haal',
-        placeholder: 'Shahar ka naam likhein…',
-        btn: '🔍 Talaash',
-        footer: 'Weather from Open-Meteo & Met.no',
-        mapsErr: 'Location nahi mili.',
-        code:{0:"Aasman bilkul saaf",1:"Thore badal",2:"Halka badal",3:"Buzd badal",
-              45:"Dhond",48:"Thandi dhond",51:"Boonda baandi",
-              61:"Halki barish",63:"Tez barish",80:"Halki showers",
-              81:"Tez showers",82:"Bari tez showers",95:"Bijli/Toofan"},
-        weatherMet(d){d=d.toLowerCase();if(d.includes("clear"))return"Aasman saaf";
-          if(d.includes("partly")||d.includes("scattered"))return"Halka badal";
-          if(d.includes("cloud"))return"Buzd badal";if(d.includes("fog"))return"Dhond";
-          if(d.includes("rain")&&d.includes("heavy"))return"Tez barish";
-          if(d.includes("rain"))return"Halki barish";if(d.includes("thunder"))return"Bijli/Toofan";
-          return"Pata nahi";},
-        windFeel(s){if(s>=10)return"Tez hawa";if(s>=5)return"Darmiyani hawa";return"Halki hawa";}
-      },
-      sd:{
-        title: '📍 موسم جو حال',
-        placeholder: 'شہر جو نالو لکو…',
-        btn: '🔍 ڳولا',
-        footer: 'Weather from Open-Meteo & Met.no',
-        mapsErr: 'جڳھ نه ملي.',
-        code:{0:"سائو آسمان",1:"ٿورا بدلا",2:"هلڪا بدلا",3:"گهڻو بدلا",
-              45:"ڌنڌ",48:"ٿڌي ڌنڌ",51:"هلڪو ڦراڱو",
-              61:"هلڪي برسات",63:"زوڏ برسات",80:"هلڪي ڦراڱا",
-              81:"زيوڙ ڦراڱا",82:"گهڻا ڦراڱا",95:"بجلي/طوفان"},
-        weatherMet(d){d=d.toLowerCase();if(d.includes("clear"))return"سائو آسمان";
-          if(d.includes("partly")||d.includes("scattered"))return"هلڪو بدلا";
-          if(d.includes("cloud"))return"گهڻو بدلا";if(d.includes("fog"))return"ڌنڌ";
-          if(d.includes("rain")&&d.includes("heavy"))return"زوڏ برسات";
-          if(d.includes("rain"))return"هلڪي برسات";if(d.includes("thunder"))return"بجلي/طوفان";
-          return"اچانک؟";},
-        windFeel(s){if(s>=10)return"تيز هوائون";if(s>=5)return"وچولي هوائون";return"هلڪي هوائون";}
+      const [omRes, metRes] = await Promise.all([
+        fetch(openMeteoURL),
+        fetch(metNoURL, {
+          headers: {
+            "User-Agent": "WeatherCompare/1.0 contact@example.com"
+          }
+        })
+      ]);
+
+      const om = await omRes.json();
+      const met = await metRes.json();
+
+      const omTime = om.hourly.time;
+      const omTemp = om.hourly.temperature_2m;
+      const omRain = om.hourly.precipitation_probability;
+      const omWind = om.hourly.wind_speed_10m;
+      const omCode = om.hourly.weathercode;
+      const metSeries = met.properties.timeseries;
+
+      const codeMap = {
+        0: "Bilkul saaf", 1: "Thora badal", 2: "Halka badal", 3: "Buhat badal",
+        45: "Dhond", 48: "Thandi dhond", 51: "Boonda", 61: "Halki barish",
+        63: "Tez barish", 80: "Halki barish", 81: "Tez barish", 82: "Bari tez barish",
+        95: "Bijli/toofan"
+      };
+
+      function weatherMet(desc) {
+        const d = desc.toLowerCase();
+        if (d.includes("clear")) return "Bilkul saaf";
+        if (d.includes("partly") || d.includes("scattered")) return "Halka badal";
+        if (d.includes("cloud")) return "Buhat badal";
+        if (d.includes("fog")) return "Dhond";
+        if (d.includes("rain") && d.includes("heavy")) return "Tez barish";
+        if (d.includes("rain")) return "Halki barish";
+        if (d.includes("thunder")) return "Bijli/toofan";
+        return "Pata nahi";
       }
-    };
-    labels = all[lang];
-    document.getElementById('title').textContent = labels.title;
-    document.getElementById('location-input').placeholder = labels.placeholder;
-    document.getElementById('search-btn').textContent = labels.btn;
-    document.getElementById('footer').textContent = labels.footer;
-  }
 
-  // geocode + fetch
-  document.getElementById('search-btn').onclick = async ()=>{
-    const q=document.getElementById('location-input').value.trim();
-    if(!q) return;
-    let res=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`);
-    let js=await res.json();
-    if(!js.length){ alert(labels.mapsErr); return; }
-    let {lat,lon}=js[0];
-    fetchWeather(lat,lon);
-  };
-
-  // fetch + render cards
-  async function fetchWeather(lat,lon){
-    const el=document.getElementById('forecast'); el.innerHTML='Loading…';
-    let [omR,mtR] = await Promise.all([
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,precipitation_probability,wind_speed_10m,weathercode&timezone=Asia%2FKarachi`),
-      fetch(`https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}`, {headers:{"User-Agent":"WeatherCompare"}})
-    ]);
-    let [om,mt]=await Promise.all([omR.json(),mtR.json()]);
-    let now=new Date(), out='';
-    for(let i=0;i<Math.min(48,om.hourly.time.length);i++){
-      let t=new Date(om.hourly.time[i]); if(t<now) continue;
-      let dStr=t.toLocaleDateString(lang==='en'?'en-GB':'ur-PK',{day:'2-digit',month:'short',year:'numeric'});
-      let tm=t.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-      let cod=om.hourly.weathercode[i], desc1=labels.code[cod]||labels.weatherMet(cod+'');
-      let feel1=labels.windFeel(om.hourly.wind_speed_10m[i]);
-      let metEnt=mt.properties.timeseries.find(e=>new Date(e.time).getHours()===t.getHours());
-      let desc2='N/A', feel2='N/A';
-      if(metEnt){
-        let sum=metEnt.data.next_1_hours?.summary?.symbol_code||'';
-        desc2=labels.weatherMet(sum);
-        feel2=labels.windFeel(metEnt.data.instant.details.wind_speed);
+      function windFeel(speed) {
+        if (speed >= 10) return "Tez hawa";
+        if (speed >= 5) return "Darmiyani hawa";
+        return "Halki hawa";
       }
-      out+=`<div class="card">
-        <h3>📅 ${dStr} – 🕒 ${tm}</h3>
-        <div class="item"> 🌤️ ${labels.title.includes('Weather')?'Open-Meteo':'Open-Meteo'}: <b>${desc1}</b></div>
-        <div class="item"> 🌡️ <b>Temp:</b> ${om.hourly.temperature_2m[i]}°C</div>
-        <div class="item"> 🌧️ <b>Rain:</b> ${om.hourly.precipitation_probability[i]}%</div>
-        <div class="item"> 🌬️ <b>Wind:</b> ${om.hourly.wind_speed_10m[i]} m/s</div>
-        <div class="item"> 🌀 <b>Feel:</b> ${feel1}</div>
-        <div class="item"> 🌤️ Met.no: <b>${desc2}</b></div>
-        <div class="item"> 🌀 Feel: ${feel2}</div>
-      </div>`;
+
+      const now = new Date();
+      let content = "";
+
+      for (let i = 0; i < Math.min(48, omTime.length); i++) {
+        const t = new Date(omTime[i]);
+        if (t < now) continue;
+
+        const dateStr = t.toLocaleDateString("ur-PK", {
+          day: "2-digit", month: "long", year: "numeric"
+        });
+        const timeStr = t.toLocaleTimeString("en-US", {
+          hour: "2-digit", minute: "2-digit"
+        });
+
+        const descOM = codeMap[omCode[i]] || "Pata nahi";
+        const feelOM = windFeel(omWind[i]);
+        const temp = omTemp[i];
+        const rain = omRain[i];
+        const wind = omWind[i];
+
+        const metEntry = metSeries.find(e => {
+          const mt = new Date(e.time);
+          return mt.getHours() === t.getHours() && mt.getDate() === t.getDate();
+        });
+
+        let descMet = "N/A", feelMet = "N/A";
+        if (metEntry) {
+          const windMet = metEntry.data.instant.details.wind_speed;
+          const summary = (metEntry.data.next_1_hours?.summary?.symbol_code) || "";
+          descMet = weatherMet(summary);
+          feelMet = windFeel(windMet);
+        }
+
+        content += `
+          <div class="card">
+            <h3>📅 ${dateStr} – 🕒 ${timeStr}</h3>
+            <div class="item">🌤️ <b>Mosam (Open-Meteo):</b> ${descOM}</div>
+            <div class="item">🌡️ <b>Hararat:</b> ${temp}°C</div>
+            <div class="item">🌧️ <b>Barish:</b> ${rain}%</div>
+            <div class="item">🌬️ <b>Hawa:</b> ${wind} m/s</div>
+            <div class="item">🌀 <b>Ehsaas:</b> ${feelOM}</div>
+            <div class="item">🌤️ <b>Met.no:</b> ${descMet}</div>
+            <div class="item">🌀 <b>Hawa (Met.no):</b> ${feelMet}</div>
+          </div>
+        `;
+      }
+
+      forecastEl.innerHTML = content;
     }
-    el.innerHTML = out;
-  }
 
-  // on load: after labels ready, fetch default
-  window.onload = ()=> setTimeout(()=>{ fetchWeather(27.84088,69.41302) },300);
+    const selector = document.getElementById("location-select");
+    selector.addEventListener("change", () => {
+      const [lat, lon] = selector.value.split(",");
+      fetchWeather(lat, lon);
+    });
+
+    window.onload = () => {
+      const [lat, lon] = selector.value.split(",");
+      fetchWeather(lat, lon);
+    };
   </script>
 </body>
 </html>
