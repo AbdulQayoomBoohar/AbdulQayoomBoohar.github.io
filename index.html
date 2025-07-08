@@ -1,0 +1,84 @@
+# StealthDroid
+
+**StealthDroid** is a lightweight, Python-based automation tool inspired by the original [Seledroid](https://github.com/luanon404/luanon)
+---
+
+## 🚀 Features
+
+StealthDroid supports all major browser automation commands, including:
+
+| Command                        | Description |
+|-------------------------------|-------------|
+| `CLOSE`                       | Closes the current browser session |
+| `CLICK_JAVA`                  | Simulates a JavaScript-based click at coordinates |
+| `CLEAR_COOKIE`                | Clears a specific cookie |
+| `CLEAR_COOKIES`               | Clears all cookies for a URL |
+| `CURRENT_URL`                 | Gets the current URL |
+| `CLEAR_LOCAL_STORAGE`        | Clears browser's localStorage |
+| `CLEAR_SESSION_STORAGE`      | Clears browser's sessionStorage |
+| `DELETE_ALL_COOKIE`          | Deletes all cookies from the browser |
+| `EXECUTE_SCRIPT`             | Executes JavaScript on the current page |
+| `FIND_ELEMENT`               | Finds an element using a locator strategy |
+| `FIND_ELEMENTS`              | Finds multiple elements using a locator strategy |
+| `GET`                        | Navigates to a given URL |
+| `GET_ATTRIBUTE`              | Gets an attribute's value from an element |
+| `GET_COOKIE`                 | Gets a specific cookie |
+| `GET_COOKIES`                | Returns all cookies |
+| `GET_USER_AGENT`             | Returns the user-agent string |
+| `GET_HEADERS`                | Returns all headers set in the session |
+| `GET_LOCAL_STORAGE`         | Retrieves all items from localStorage |
+| `GET_SESSION_STORAGE`       | Retrieves all items from sessionStorage |
+| `GET_RECAPTCHA_V3_TOKEN`    | Attempts to extract token from Recaptcha v3 sitekey |
+| `INIT`                       | Initializes a remote session |
+| `OVERRIDE_JS_FUNCTION`       | Overrides a JavaScript function on the page |
+| `PAGE_SOURCE`                | Returns the full HTML source of the page |
+| `REMOVE_ATTRIBUTE`           | Removes an attribute from an element |
+| `SEND_KEY`                   | Sends a keyboard key to a focused element |
+| `SEND_TEXT`                  | Types text into an input field |
+| `SET_ATTRIBUTE`              | Sets an attribute on an element |
+| `SWIPE`                      | Swipes in a direction with coordinates |
+| `SWIPE_DOWN`                 | Swipes downward |
+| `SWIPE_UP`                   | Swipes upward |
+| `SET_COOKIE`                 | Sets a cookie |
+| `SET_USER_AGENT`             | Sets the browser's user-agent string |
+| `SET_PROXY`                  | Routes traffic through a proxy server |
+| `SCROLL_TO`                  | Scrolls the window to specific X/Y |
+| `SET_HEADERS`                | Overrides default headers |
+| `SET_LOCAL_STORAGE`         | Writes key/value into localStorage |
+| `SET_SESSION_STORAGE`       | Writes key/value into sessionStorage |
+| `TITLE`                      | Gets the current page's title |
+| `WAIT_UNTIL_ELEMENT`        | Waits until an element appears |
+| `WAIT_UNTIL_NOT_ELEMENT`    | Waits until an element disappears |
+
+---
+
+## 📄 Example Usage
+
+```python
+from stealthdroid.webdriver import Chrome
+
+driver.get("https://example.com")
+
+el = driver.find_element_by_tag_name("h1")
+print("Page heading:", el.inner_html)
+
+driver.close()
+```
+
+---
+
+## 📦 Forked From
+
+This project is forked from the archived [`Seledroid`](https://github.com/luanon404/luanon) project, with enhancements to support cleaner builds, removal of deprecation warnings, and simplified structure.
+
+---
+
+## ⚠️ Disclaimer
+
+This tool is provided for **educational and ethical** automation only. Do not use it to violate terms of service of any website.
+
+---
+
+## 🧑‍💻 Author
+
+Maintained by [stealthdroid]
